@@ -1,0 +1,71 @@
+{% extends 'avaliacao/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people-fill"></i> Lista de Pacientes</h2>
+        <a href="{% url 'avaliacao:novo_paciente' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Novo Paciente
+        </a>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Idade</th>
+                            <th>Sexo</th>
+                            <th>Telefone</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for paciente in pacientes %}
+                        <tr>
+                            <td>{{ paciente.id }}</td>
+                            <td>{{ paciente.nome }}</td>
+                            <td>{{ paciente.idade }} anos</td>
+                            <td>{{ paciente.get_sexo_display }}</td>
+                            <td>{{ paciente.telefone|default:"-" }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'avaliacao:nova_avaliacao' paciente.id %}" 
+                                       class="btn btn-sm btn-success"
+                                       title="Nova Avaliação">
+                                        <i class="bi bi-clipboard-plus"></i>
+                                    </a>
+                                    <a href="{% url 'avaliacao:historico_avaliacoes' paciente.id %}" 
+                                       class="btn btn-sm btn-info"
+                                       title="Ver Histórico">
+                                        <i class="bi bi-clock-history"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                Nenhum paciente cadastrado ainda.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends 'avaliacao/base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Cabeçalho -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h2>
+                <i class="bi bi-file-earmark-text"></i>
+                Relatório Completo - {{ paciente.nome }}
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Dados da Avaliação Atual</h4>
+                    <p><strong>Data:</strong> {{ avaliacao.data_avaliacao|date:"d/m/Y" }}</p>
+                    <p><strong>Peso:</strong> {{ avaliacao.peso }} kg</p>
+                    <p><strong>Altura:</strong> {{ avaliacao.altura }} m</p>
+                    <p><strong>IMC:</strong> {{ avaliacao.imc|floatformat:1 }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h4>Composição Corporal</h4>
+                    <p><strong>% Gordura:</strong> {{ avaliacao.percentual_gordura }}%</p>
+                    <p><strong>Massa Magra:</strong> {{ avaliacao.massa_magra }} kg</p>
+                    <p><strong>Gordura Visceral:</strong> {{ avaliacao.gordura_visceral }}</p>
+                    <p><strong>Taxa Metabólica Basal:</strong> {{ avaliacao.tmb }} kcal</p>
+                    {% if graficos.composicao %}
+                    <div class="mt-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Distribuição Corporal</h5>
+                                <img 
+                                    src="data:image/png;base64,{{ graficos.composicao }}" 
+                                    class="img-fluid rounded" 
+                                    alt="Composição Corporal"
+                                    style="max-height: 300px;"
+                                >
+                                <p class="mt-2 text-muted text-center">
+                                    <span class="badge bg-danger">Massa Gorda: {{ avaliacao.percentual_gordura }}%</span>
+                                    <span class="badge bg-primary ms-2">Massa Magra: {{ 100|subtract:avaliacao.percentual_gordura }}%</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if avaliacao.soma_7_dobras > 0 %}
+                    <div class="mt-3">
+                        <h5>Análise por Dobras Cutâneas</h5>
+                        <p><strong>Soma das 7 dobras:</strong> {{ avaliacao.soma_7_dobras|floatformat:1 }} mm</p>
+                        <p><strong>Protocolo:</strong> Pollock 7 dobras</p>
+                    </div>
+                    {% endif %}
+                    <!-- FIM DO BLOCO -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela com histórico completo -->
+    <div class="card mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h4><i class="bi bi-calendar-check"></i> Histórico Completo de Avaliações</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Peso (kg)</th>
+                            <th>Altura (m)</th>
+                            <th>IMC</th>
+                            <th>% Gordura</th>
+                            <th>Variação Peso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for av in avaliacoes_anteriores %}
+                        <tr {% if av.id == avaliacao.id %}class="avaliacao-atual"{% endif %}>
+                            <td>{{ av.data_avaliacao|date:"d/m/Y" }}</td>
+                            <td>{{ av.peso|floatformat:1 }}</td>
+                            <td>{{ av.altura|floatformat:2 }}</td>
+                            <td>{{ av.imc|floatformat:1 }}</td>
+                            <td>{{ av.percentual_gordura|floatformat:1 }}%</td>
+                            <td>
+                                {% if not forloop.first %}
+                                {% with anterior=avaliacoes_anteriores|previous:forloop.counter0 %}
+                                <span class="{% if av.peso > anterior.peso %}text-danger{% else %}text-success{% endif %}">
+                                    {{ av.peso|subtract:anterior.peso|floatformat:1 }} kg
+                                </span>
+                                {% endwith %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos de Evolução Horizontal -->
+    {% if tem_historico %}
+    <!-- Seção de Gráficos (substitua o bloco atual) -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h4><i class="bi bi-graph-up"></i> Evolução Temporal</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Gráfico de Peso -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Peso (kg)</h5>
+                            <img src="data:image/png;base64,{{ graficos.peso }}" class="img-fluid" alt="Evolução do Peso">
+                            <p class="mt-2 text-muted">Variação desde a primeira avaliação: <strong>{{ avaliacao.peso|subtract:avaliacoes_anteriores.first.peso|floatformat:1 }} kg</strong></p>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Gráfico de % Gordura -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">% Gordura</h5>
+                            <img src="data:image/png;base64,{{ graficos.gordura }}" class="img-fluid" alt="Evolução do % Gordura">
+                            <p class="mt-2 text-muted">Variação: <strong>{{ avaliacao.percentual_gordura|subtract:avaliacoes_anteriores.first.percentual_gordura|floatformat:1 }}%</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Botões de Ação -->
+    <div class="mt-4 no-print">
+        <a href="{% url 'avaliacao:historico_avaliacoes' paciente.id %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Voltar ao Histórico
+        </a>
+        <button onclick="window.print()" class="btn btn-primary">
+            <i class="bi bi-printer"></i> Imprimir Relatório
+        </button>
+    </div>
+</div>
+{% endblock %}

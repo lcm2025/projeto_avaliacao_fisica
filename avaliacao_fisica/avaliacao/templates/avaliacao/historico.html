@@ -1,0 +1,79 @@
+{% extends 'avaliacao/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="bi bi-clock-history"></i> 
+            {{ titulo }}
+        </h2>
+        <div>
+            <a href="{% url 'avaliacao:nova_avaliacao' paciente.id %}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Nova Avaliação
+            </a>
+            <a href="{% url 'avaliacao:lista_pacientes' %}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <p><strong>Paciente:</strong> {{ paciente.nome }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Idade:</strong> {{ paciente.idade }} anos</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Total de Avaliações:</strong> {{ avaliacoes.count }}</p>
+                </div>
+            </div>
+
+            {% if avaliacoes %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Data</th>
+                            <th>Peso (kg)</th>
+                            <th>Altura (m)</th>
+                            <th>IMC</th>
+                            <th>% Gordura</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for avaliacao in avaliacoes %}
+                        <tr>
+                            <td>{{ avaliacao.data_avaliacao|date:"d/m/Y" }}</td>
+                            <td>{{ avaliacao.peso }}</td>
+                            <td>{{ avaliacao.altura }}</td>
+                            <td>{{ avaliacao.imc|floatformat:1 }}</td>
+                            <td>{{ avaliacao.percentual_gordura }}</td>
+                            <td>
+                                <a href="{% url 'avaliacao:relatorio_completo' avaliacao.id %}" 
+                                   class="btn btn-sm btn-info"
+                                   title="Ver Relatório">
+                                    <i class="bi bi-file-earmark-text"></i> Relatório
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">Nenhuma avaliação encontrada.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info">
+                Nenhuma avaliação registrada para este paciente.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

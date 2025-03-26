@@ -1,0 +1,127 @@
+{% extends 'avaliacao/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header bg-primary text-white">
+        <h2>
+            <i class="bi bi-clipboard2-plus"></i>
+            Nova Avaliação para {{ paciente.nome }}
+        </h2>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <p><strong>Idade:</strong> {{ paciente.idade }} anos</p>
+                <p><strong>Sexo:</strong> {{ paciente.get_sexo_display }}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Última avaliação:</strong> 
+                   {% if avaliacoes_anteriores %}
+                       {{ avaliacoes_anteriores.0.data_avaliacao|date:"d/m/Y" }}
+                   {% else %}
+                       Nenhuma avaliação anterior
+                   {% endif %}
+                </p>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Dados Antropométricos</h4>
+                    {{ form.altura|as_crispy_field }}
+                    {{ form.peso|as_crispy_field }}
+                </div>
+                
+                <div class="col-md-6">
+                    <h4>Dados de Bioimpedância</h4>
+                    {{ form.percentual_gordura|as_crispy_field }}
+                    {{ form.massa_magra|as_crispy_field }}
+                    {{ form.gordura_visceral|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    <h5 class="mt-4">Dobras Cutâneas (mm)</h5>
+                    {{ form.torax|as_crispy_field }}
+                    {{ form.triceps|as_crispy_field }}
+                    {{ form.abdominal|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    <h5 class="mt-4" style="visibility: hidden;">Dobras Cutâneas</h5>
+                    {{ form.coxa|as_crispy_field }}
+                    {{ form.axilar_media|as_crispy_field }}
+                    {{ form.subescapular|as_crispy_field }}
+                    {{ form.suprailiaca|as_crispy_field }}
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    {{ form.tmb|as_crispy_field }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.idade_metabolica|as_crispy_field }}
+                </div>
+            </div>
+            
+            {{ form.observacoes|as_crispy_field }}
+            
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Salvar Avaliação
+                </button>
+                <a href="{% url 'avaliacao:lista_pacientes' %}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if avaliacoes_anteriores %}
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <h4><i class="bi bi-clock-history"></i> Últimas Avaliações</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Peso</th>
+                        <th>% Gordura</th>
+                        <th>IMC</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for av in avaliacoes_anteriores %}
+                    <tr>
+                        <td>{{ av.data_avaliacao|date:"d/m/Y" }}</td>
+                        <td>{{ av.peso }} kg</td>
+                        <td>{{ av.percentual_gordura }}%</td>
+                        <td>{{ av.imc|floatformat:1 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+    .card {
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .card-header {
+        padding: 15px 20px;
+    }
+    .table th {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}

@@ -16,14 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.http import HttpResponse
-
-
-def teste_view(request):
-    return HttpResponse("Está funcionando!")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('teste/', teste_view),  # Adicionei uma URL de teste aqui
-    path('', include('avaliacoes.urls')),  # Essa linha deve existir
+    path('', include('avaliacao.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
