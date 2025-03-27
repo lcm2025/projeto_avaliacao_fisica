@@ -29,6 +29,31 @@
         <form method="post">
             {% csrf_token %}
             
+            <!-- Seção de Protocolo -->
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="bi bi-clipboard2-pulse"></i> Protocolo de Avaliação
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {{ form.protocolo|as_crispy_field }}
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="alert alert-info mt-md-4">
+                                        <i class="bi bi-info-circle"></i> Selecione o método de cálculo
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row">
                 <div class="col-md-6">
                     <h4>Dados Antropométricos</h4>
@@ -42,21 +67,53 @@
                     {{ form.massa_magra|as_crispy_field }}
                     {{ form.gordura_visceral|as_crispy_field }}
                 </div>
-                <div class="col-md-6">
-                    <h5 class="mt-4">Dobras Cutâneas (mm)</h5>
-                    {{ form.torax|as_crispy_field }}
-                    {{ form.triceps|as_crispy_field }}
-                    {{ form.abdominal|as_crispy_field }}
-                </div>
-                <div class="col-md-6">
-                    <h5 class="mt-4" style="visibility: hidden;">Dobras Cutâneas</h5>
-                    {{ form.coxa|as_crispy_field }}
-                    {{ form.axilar_media|as_crispy_field }}
-                    {{ form.subescapular|as_crispy_field }}
-                    {{ form.suprailiaca|as_crispy_field }}
+            </div>
+
+            <!-- Seção de Dobras Cutâneas Modificada -->
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="bi bi-rulers"></i> Dobras Cutâneas (mm)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Campos compartilhados (sempre visíveis) -->
+                                <div class="col-md-3">
+                                    {{ form.triceps|as_crispy_field }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.subescapular|as_crispy_field }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.torax|as_crispy_field }}
+                                </div>
+                                <div class="col-md-3">
+                                    {{ form.abdominal|as_crispy_field }}
+                                </div>
+                            </div>
+                            
+                            <!-- Campos específicos do Pollock (ocultos inicialmente) -->
+                            <div id="pollock-extra-fields" style="display: none;">
+                                <div class="row mt-3">
+                                    <div class="col-md-4">
+                                        {{ form.coxa|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{ form.axilar_media|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-4">
+                                        {{ form.suprailiaca|as_crispy_field }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
+
             <div class="row mt-3">
                 <div class="col-md-6">
                     {{ form.tmb|as_crispy_field }}
@@ -112,16 +169,312 @@
 </div>
 {% endif %}
 
+{% endblock %}
+
+{% block extra_js %}
+<!-- Visualizador de Dobras -->
+<!-- Visualizador de Dobras - Versão Melhorada -->
+<div class="card mt-4">
+    <div class="card-header bg-info text-white">
+        <h5><i class="bi bi-body-text"></i> Visualizador de Dobras Cutâneas</h5>
+    </div>
+    <div class="card-body text-center">
+        <div class="row">
+            <div class="col-md-6">
+                <!-- SVG Masculino -->
+                <svg id="body-male" width="180" height="400" viewBox="0 0 180 400" 
+                     style="display: {% if paciente.sexo == 'M' %}block{% else %}none{% endif %};">
+                    <!-- Cabeça -->
+                    <circle cx="90" cy="30" r="15" fill="#e6f3ff" stroke="#333"/>
+                    <!-- Pescoço -->
+                    <rect x="85" y="45" width="10" height="15" fill="#e6f3ff" stroke="#333"/>
+                    <!-- Tronco -->
+                    <path d="M70,60 Q90,65 110,60 L115,120 Q90,130 65,120 Z" fill="#e6f3ff" stroke="#333"/>
+                    <!-- Braços -->
+                    <path d="M110,65 L140,85 L145,120 L135,125 L110,100 Z" fill="#e6f3ff" stroke="#333"/>
+                    <path d="M70,65 L40,85 L35,120 L45,125 L70,100 Z" fill="#e6f3ff" stroke="#333"/>
+                    <!-- Pernas -->
+                    <path d="M80,120 L85,220 L75,250 L65,220 L70,120 Z" fill="#e6f3ff" stroke="#333"/>
+                    <path d="M100,120 L95,220 L105,250 L115,220 L110,120 Z" fill="#e6f3ff" stroke="#333"/>
+                    
+                    <!-- Pontos de dobra (posições mais anatômicas) -->
+                    <circle id="male-triceps" cx="130" cy="100" r="5" fill="red" opacity="0.7" data-dobra="triceps" style="cursor:pointer"/>
+                    <circle id="male-subescapular" cx="85" cy="80" r="5" fill="red" opacity="0.7" data-dobra="subescapular" style="cursor:pointer"/>
+                    <circle id="male-torax" cx="105" cy="90" r="5" fill="red" opacity="0.7" data-dobra="torax" style="cursor:pointer"/>
+                    <circle id="male-abdominal" cx="90" cy="140" r="5" fill="red" opacity="0.7" data-dobra="abdominal" style="cursor:pointer"/>
+                    <circle id="male-coxa" cx="80" cy="200" r="5" fill="red" opacity="0.7" data-dobra="coxa" style="cursor:pointer"/>
+                    <circle id="male-axilar" cx="120" cy="85" r="5" fill="red" opacity="0.7" data-dobra="axilar_media" style="cursor:pointer"/>
+                    <circle id="male-suprailiaca" cx="85" cy="130" r="5" fill="red" opacity="0.7" data-dobra="suprailiaca" style="cursor:pointer"/>
+                </svg>
+                
+                <!-- SVG Feminino -->
+                <svg id="body-female" width="180" height="400" viewBox="0 0 180 400" 
+                     style="display: {% if paciente.sexo == 'F' %}block{% else %}none{% endif %};">
+                    <!-- Cabeça -->
+                    <circle cx="90" cy="30" r="15" fill="#ffe6f3" stroke="#333"/>
+                    <!-- Pescoço -->
+                    <rect x="85" y="45" width="10" height="15" fill="#ffe6f3" stroke="#333"/>
+                    <!-- Tronco (com curvas mais femininas) -->
+                    <path d="M70,60 Q90,70 110,60 L115,100 Q100,120 90,110 Q80,120 65,100 Z" fill="#ffe6f3" stroke="#333"/>
+                    <!-- Braços -->
+                    <path d="M110,65 L140,85 L145,120 L135,125 L110,100 Z" fill="#ffe6f3" stroke="#333"/>
+                    <path d="M70,65 L40,85 L35,120 L45,125 L70,100 Z" fill="#ffe6f3" stroke="#333"/>
+                    <!-- Pernas -->
+                    <path d="M80,100 L85,220 L75,250 L65,220 L70,100 Z" fill="#ffe6f3" stroke="#333"/>
+                    <path d="M100,100 L95,220 L105,250 L115,220 L110,100 Z" fill="#ffe6f3" stroke="#333"/>
+                    
+                    <!-- Pontos de dobra -->
+                    <circle id="female-triceps" cx="130" cy="100" r="5" fill="red" opacity="0.7" data-dobra="triceps" style="cursor:pointer"/>
+                    <circle id="female-subescapular" cx="85" cy="80" r="5" fill="red" opacity="0.7" data-dobra="subescapular" style="cursor:pointer"/>
+                    <circle id="female-torax" cx="105" cy="90" r="5" fill="red" opacity="0.7" data-dobra="torax" style="cursor:pointer"/>
+                    <circle id="female-abdominal" cx="90" cy="130" r="5" fill="red" opacity="0.7" data-dobra="abdominal" style="cursor:pointer"/>
+                    <circle id="female-coxa" cx="80" cy="200" r="5" fill="red" opacity="0.7" data-dobra="coxa" style="cursor:pointer"/>
+                    <circle id="female-axilar" cx="120" cy="85" r="5" fill="red" opacity="0.7" data-dobra="axilar_media" style="cursor:pointer"/>
+                    <circle id="female-suprailiaca" cx="85" cy="120" r="5" fill="red" opacity="0.7" data-dobra="suprailiaca" style="cursor:pointer"/>
+                </svg>
+            </div>
+            <div class="col-md-6">
+                <div class="alert alert-info">
+                    <strong>Como usar:</strong> Clique em uma dobra no corpo para focar no campo correspondente
+                </div>
+                <div id="dobra-info" class="mt-3 p-3 bg-light rounded">
+                    <h5 id="dobra-nome" class="text-center">Selecione uma dobra</h5>
+                    <p id="dobra-descricao" class="text-muted text-center">Clique em um ponto vermelho no corpo</p>
+                    <div id="dobra-imagem" class="mt-2 text-center"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sexo = "{{ paciente.sexo }}";
+        const svg = document.getElementById(sexo === 'M' ? 'body-male' : 'body-female');
+        const protocoloSelect = document.getElementById('id_protocolo');
+        const pollockExtraFields = document.getElementById('pollock-extra-fields');
+
+        // Função para atualizar a visibilidade dos campos
+        function updateFieldsVisibility() {
+            if (!protocoloSelect || !pollockExtraFields) return;
+            
+            if (protocoloSelect.value === 'POLLOCK_7') {
+                pollockExtraFields.style.display = 'block';
+            } else {
+                pollockExtraFields.style.display = 'none';
+            }
+        }
+        // Configura o event listener
+        if (protocoloSelect) {
+            protocoloSelect.addEventListener('change', updateFieldsVisibility);
+            updateFieldsVisibility(); // Executa ao carregar para configurar estado inicial
+        }
+        
+        // Descrições e imagens de referência
+        const descricoes = {
+            'triceps': {
+                text: 'Tríceps: Medida na parte posterior do braço, ponto médio entre o ombro e o cotovelo',
+                img: 'https://i.imgur.com/JRw7m3O.png'
+            },
+            'subescapular': {
+                text: 'Subescapular: Abaixo da escápula, em ângulo de 45 graus',
+                img: 'https://i.imgur.com/V4NpkGd.png'
+            },
+            'torax': {
+                text: 'Tórax/Peitoral: Linha axilar média, na altura do processo xifoide',
+                img: 'https://i.imgur.com/9X8v7zQ.png'
+            },
+            'abdominal': {
+                text: 'Abdominal: 2-5 cm à direita do umbigo',
+                img: 'https://i.imgur.com/kLpW0sY.png'
+            },
+            'coxa': {
+                text: 'Coxa: Parte anterior da coxa, ponto médio entre a patela e a prega inguinal',
+                img: 'https://i.imgur.com/mQ4TqXG.png'
+            },
+            'axilar_media': {
+                text: 'Axilar Média: Linha axilar média, na altura do apêndice xifoide',
+                img: 'https://i.imgur.com/3sQZ2jP.png'
+            },
+            'suprailiaca': {
+                text: 'Supra-ilíaca: Acima da crista ilíaca, na linha axilar média',
+                img: 'https://i.imgur.com/5WvB7fF.png'
+            }
+        };
+    
+        // Função para focar no campo do formulário
+        function focusDobraField(dobra) {
+            const field = document.getElementById(`id_${dobra}`);
+            if (field) {
+                field.focus();
+                field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Destaque temporário no campo
+                field.style.boxShadow = '0 0 0 2px rgba(231, 76, 60, 0.5)';
+                setTimeout(() => {
+                    field.style.boxShadow = 'none';
+                }, 2000);
+            }
+        }
+    
+        // Configura interação com os pontos
+        function setupDobraInteraction() {
+            if (!svg) return;
+            
+            const pontos = svg.querySelectorAll('circle[data-dobra]');
+            
+            pontos.forEach(ponto => {
+                // Remove event listeners antigos para evitar duplicação
+                ponto.replaceWith(ponto.cloneNode(true));
+            });
+            
+            // Adiciona novos listeners
+            svg.querySelectorAll('circle[data-dobra]').forEach(ponto => {
+                const dobra = ponto.getAttribute('data-dobra');
+                
+                ponto.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    focusDobraField(dobra);
+                    
+                    // Atualiza info box
+                    document.getElementById('dobra-nome').textContent = 
+                        dobra.charAt(0).toUpperCase() + dobra.replace('_', ' ').slice(1);
+                    document.getElementById('dobra-descricao').textContent = descricoes[dobra].text;
+                    
+                    // Mostra imagem de referência
+                    const imgContainer = document.getElementById('dobra-imagem');
+                    imgContainer.innerHTML = `
+                        <img src="${descricoes[dobra].img}" 
+                             class="img-fluid mt-2" 
+                             style="max-height:150px; border:1px solid #ddd; border-radius:4px" 
+                             alt="Localização da dobra">
+                    `;
+                    
+                    // Efeito visual no ponto
+                    ponto.style.fill = '#e74c3c';
+                    setTimeout(() => {
+                        ponto.style.fill = 'red';
+                    }, 500);
+                });
+                
+                // Efeito hover
+                ponto.addEventListener('mouseenter', function() {
+                    if (ponto.style.opacity !== '0') {
+                        ponto.setAttribute('r', '7');
+                        ponto.style.filter = 'drop-shadow(0 0 3px rgba(231, 76, 60, 0.8))';
+                    }
+                });
+                
+                ponto.addEventListener('mouseleave', function() {
+                    punto.setAttribute('r', '5');
+                    punto.style.filter = 'none';
+                });
+            });
+        }
+    
+        // Ativa pontos conforme protocolo
+        function updatePontosAtivos() {
+            if (!protocoloSelect || !svg) return;
+            
+            const protocolo = protocoloSelect.value;
+            const pontos = svg.querySelectorAll('circle[data-dobra]');
+            
+            pontos.forEach(ponto => {
+                const dobra = ponto.getAttribute('data-dobra');
+                const mostrar = protocolo === 'FALKNER_4' ? 
+                    ['triceps', 'subescapular', 'torax', 'abdominal'].includes(dobra) :
+                    true;
+                
+                ponto.style.opacity = mostrar ? '0.7' : '0';
+                ponto.style.pointerEvents = mostrar ? 'auto' : 'none';
+            });
+        }
+    
+        // Inicialização
+        setupDobraInteraction();
+        
+        if (protocoloSelect) {
+            protocoloSelect.addEventListener('change', updatePontosAtivos);
+            updatePontosAtivos();
+        }
+    });
+</script>
+
 <style>
+    /* Estilos gerais dos cards */
     .card {
         margin-bottom: 20px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border: none;
+        border-radius: 10px;
     }
     .card-header {
         padding: 15px 20px;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
     }
+    .card-header.bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    /* Tabelas */
     .table th {
         background-color: #f8f9fa;
+        font-weight: 600;
+    }
+    
+    /* Visualizador de dobras */
+    #pollock-extra-fields {
+        transition: all 0.3s ease;
+    }
+    
+    /* SVG e pontos de dobra */
+    svg {
+        max-height: 380px;
+        margin: 0 auto;
+        display: block;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        pointer-events: bounding-box;
+    }
+    
+    circle[data-dobra] {
+        transition: all 0.2s ease;
+        stroke: white;
+        stroke-width: 1;
+        cursor: pointer;
+    }
+    
+    /* Container de informações */
+    #dobra-info {
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+    }
+    
+    /* Efeitos especiais */
+    .dobra-highlight {
+        animation: pulseHighlight 1.5s ease-in-out;
+    }
+    
+    @keyframes pulseHighlight {
+        0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+    }
+    
+    /* Responsividade */
+    @media (max-width: 768px) {
+        svg {
+            max-height: 300px;
+        }
+        #dobra-info {
+            min-height: 150px;
+        }
     }
 </style>
 {% endblock %}

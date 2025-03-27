@@ -45,6 +45,18 @@
                         </div>
                     </div>
                     {% endif %}
+                    <div class="mt-3">
+                        <h5>Análise por Dobras Cutâneas</h5>
+                        <p><strong>Protocolo:</strong> {{ avaliacao.get_protocolo_display }}</p>
+                        <p><strong>Dobras medidas:</strong>
+                            {% if avaliacao.protocolo == 'POLLOCK_7' %}
+                                {{ avaliacao.soma_7_dobras|floatformat:1 }} mm (7 dobras)
+                            {% else %}
+                                {{ avaliacao.soma_4_dobras|floatformat:1 }} mm (4 dobras)
+                            {% endif %}
+                        </p>
+                        <p><strong>Fórmula:</strong> {{ avaliacao.formula_usada }}</p>
+                    </div>
                     {% if avaliacao.soma_7_dobras > 0 %}
                     <div class="mt-3">
                         <h5>Análise por Dobras Cutâneas</h5>

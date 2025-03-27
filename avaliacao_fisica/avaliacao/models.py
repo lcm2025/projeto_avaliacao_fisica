@@ -23,6 +23,17 @@ class Paciente(models.Model):
         return self.nome
 
 class Avaliacao(models.Model):
+    PROTOCOLOS = [
+        ('POLLOCK_7', 'Pollock 7 Dobras'),
+        ('FALKNER_4', 'Falkner 4 Dobras'),
+    ]
+    
+    protocolo = models.CharField(
+        max_length=10,
+        choices=PROTOCOLOS,
+        default='POLLOCK_7'
+    )
+
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='avaliacoes')
     data_avaliacao = models.DateTimeField(auto_now_add=True)
     altura = models.FloatField(help_text="Altura em metros")
@@ -53,6 +64,16 @@ class Avaliacao(models.Model):
             self.axilar_media or 0,
             self.subescapular or 0,
             self.suprailiaca or 0
+        ])
+    
+    @property
+    def soma_4_dobras(self):
+        """Soma para Falkner: tríceps + subescapular + torax + abdominal"""
+        return sum([
+            self.triceps or 0,
+            self.subescapular or 0,
+            self.torax or 0,
+            self.abdominal or 0
         ])
     
     class Meta:

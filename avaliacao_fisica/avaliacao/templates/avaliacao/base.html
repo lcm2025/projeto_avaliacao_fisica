@@ -75,7 +75,37 @@
         .text-danger {
             color: #dc3545;
         }
+        /* Visualizador de Dobras */
+        .dobra-highlight {
+            animation: pulseHighlight 1.5s ease-in-out;
+            border-color: #e74c3c !important;
+        }
+        @keyframes pulseHighlight {
+            0% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+        }
+        /* Garante que o SVG seja clicável */
+        svg {
+            pointer-events: bounding-box;
+        }
+        /* Estilo para os pontos de dobra */
+        circle[data-dobra] {
+            transition: all 0.2s ease;
+            stroke: white;
+            stroke-width: 1;
+        }
+        #pollock-extra-fields {
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
         
+        /* Adicione isso para garantir que os campos não "pulem" */
+        #pollock-extra-fields .row {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #ddd;
+        }
         /* Impressão */
         @media print {
             .no-print {

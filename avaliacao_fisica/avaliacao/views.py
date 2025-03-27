@@ -38,17 +38,30 @@ def nova_avaliacao(request, paciente_id):
         if form.is_valid():
             avaliacao = form.save(commit=False)
             avaliacao.paciente = paciente
-            # Calcula % gordura se todas dobras forem fornecidas
-            if all([
-                avaliacao.torax, avaliacao.triceps, avaliacao.abdominal,
+           # Calcula % gordura se dobras foram fornecidas
+            if avaliacao.protocolo and any([
+                avaliacao.triceps, avaliacao.subescapular,
+                avaliacao.torax, avaliacao.abdominal,
                 avaliacao.coxa, avaliacao.axilar_media,
-                avaliacao.subescapular, avaliacao.suprailiaca
+                avaliacao.suprailiaca
             ]):
-                avaliacao.percentual_gordura = calcular_gordura_pollock(
-                    soma_dobras=avaliacao.soma_7_dobras,
-                    idade=paciente.idade,
-                    sexo=paciente.sexo
+                soma_dobras = sum([
+                    avaliacao.triceps or 0,
+                    avaliacao.subescapular or 0,
+                    avaliacao.torax or 0,
+                    avaliacao.abdominal or 0,
+                    avaliacao.coxa or 0,
+                    avaliacao.axilar_media or 0,
+                    avaliacao.suprailiaca or 0
+                ])
+                
+                percentual, _ = calcular_gordura(
+                soma_dobras if avaliacao.protocolo == 'POLLOCK_7' else (avaliacao.triceps + avaliacao.subescapular + avaliacao.torax + avaliacao.abdominal),
+                paciente.idade,
+                paciente.sexo,
+                avaliacao.protocolo
                 )
+                avaliacao.percentual_gordura = percentual
             
             avaliacao.save()
             return redirect('avaliacao:historico_avaliacoes', paciente_id=paciente.id)
@@ -128,23 +141,35 @@ def relatorio_completo(request, pk):
         'titulo': f'Relatório - {paciente.nome}'
     })
 
-def calcular_gordura_pollock(soma_dobras, idade, sexo):
+def calcular_gordura(soma_dobras, idade, sexo, protocolo):
     """
-    Calcula % de gordura pelo protocolo de Pollock 7 dobras
-    Fórmulas válidas para adultos (18-60 anos)
+    Calcula % de gordura para diferentes protocolos
+    Retorna (percentual_gordura, fórmula_usada)
     """
-    densidade_corporal = (
-        1.112 - (0.00043499 * soma_dobras) + 
-        (0.00000055 * soma_dobras**2) - 
-        (0.00028826 * idade)
-    ) if sexo == 'M' else (
-        1.097 - (0.00046971 * soma_dobras) + 
-        (0.00000056 * soma_dobras**2) - 
-        (0.00012828 * idade)
-    )
+    if protocolo == 'POLLOCK_7':
+        if sexo == 'M':
+            densidade = (
+                1.112 - (0.00043499 * soma_dobras) + 
+                (0.00000055 * soma_dobras**2) - 
+                (0.00028826 * idade)
+            )
+        else:
+            densidade = (
+                1.097 - (0.00046971 * soma_dobras) + 
+                (0.00000056 * soma_dobras**2) - 
+                (0.00012828 * idade)
+            )
+        formula = "Pollock 7 dobras"
     
-    percentual_gordura = (4.95 / densidade_corporal - 4.5) * 100
-    return round(percentual_gordura, 1)
+    elif protocolo == 'FALKNER_4':
+        if sexo == 'M':
+            densidade = 1.1714 - (0.00061 * soma_dobras) + (0.0000096 * soma_dobras**2)
+        else:
+            densidade = 1.1581 - (0.00056 * soma_dobras) + (0.000008 * soma_dobras**2)
+        formula = "Falkner 4 dobras"
+    
+    percentual = (4.95 / densidade - 4.5) * 100
+    return round(percentual, 1), formula
 
 def gerar_grafico(queryset, campo_x, campo_y, titulo, unidade, destaque=None):
     """Gera gráfico de linha temporal horizontal com destaque"""
