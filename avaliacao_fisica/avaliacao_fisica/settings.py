@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='secret')
 DEBUG = 'RENDER' not in os.environ
 
 ALLOWED_HOSTS = [
-    '',  # Substitua pelo URL do seu serviço no Render
+    'https://projeto-avaliacao-fisica.onrender.com,'  # Substitua pelo URL do seu serviço no Render
     'localhost',                 # Para testes locais
     '127.0.0.1',
 ]
