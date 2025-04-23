@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bem-vindo</title>
+</head>
+<body>
+    <h1>Sistema de Avaliação Física</h1>
+    {% if user.is_authenticated %}
+        <p>Olá {{ user.username }}! <a href="{% url 'logout' %}">Sair</a></p>
+        <a href="{% url 'avaliacao:lista_pacientes' %}">Ver Pacientes</a>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+</body>
+</html>

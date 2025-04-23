@@ -66,10 +66,14 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'avaliacao_fisica.urls'
 
+LOGIN_URL = 'login'  # Nome da URL de login
+LOGIN_REDIRECT_URL = 'avaliacao:lista_pacientes'  # Para onde redirecionar após login
+LOGOUT_REDIRECT_URL = 'home'  # Para onde redirecionar após logout
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Atualização
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
