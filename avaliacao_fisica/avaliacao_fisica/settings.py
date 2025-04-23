@@ -69,10 +69,7 @@ ROOT_URLCONF = 'avaliacao_fisica.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-       'DIRS': [
-            os.path.join(BASE_DIR, 'templates'),  # Para templates globais (login)
-            os.path.join(BASE_DIR, 'avaliacao/templates')  # Para templates do app
-        ],        
+       'DIRS': [os.path.join(BASE_DIR, 'templates')], # raiz principal 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
