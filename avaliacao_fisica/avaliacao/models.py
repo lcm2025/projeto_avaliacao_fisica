@@ -54,6 +54,24 @@ class Avaliacao(models.Model):
     subescapular = models.FloatField('Subescapular', null=True, blank=True)
     suprailiaca = models.FloatField('Supra-ilíaca', null=True, blank=True)
 
+    # Membros Superiores, Medidas MM
+    braco_direito = models.FloatField('Braço Direito (mm)', null=True, blank=True)
+    braco_esquerdo = models.FloatField('Braço Esquerdo (mm)', null=True, blank=True)
+    antebraco_direito = models.FloatField('Antebraço Direito (mm)', null=True, blank=True)
+    antebraco_esquerdo = models.FloatField('Antebraço Esquerdo (mm)', null=True, blank=True)
+    
+    # Tronco, Medidas MM
+    cintura = models.FloatField('Cintura (mm)', null=True, blank=True)
+    quadril = models.FloatField('Quadril (mm)', null=True, blank=True)
+    tronco = models.FloatField('Tronco (mm)', null=True, blank=True)
+    abdomen = models.FloatField('Abdômen (mm)', null=True, blank=True)
+    
+    # Membros Inferiores, Medidas MM
+    coxa_direita = models.FloatField('Coxa Direita (mm)', null=True, blank=True)
+    coxa_esquerda = models.FloatField('Coxa Esquerda (mm)', null=True, blank=True)
+    panturrilha_direita = models.FloatField('Panturrilha Direita (mm)', null=True, blank=True)
+    panturrilha_esquerda = models.FloatField('Panturrilha Esquerda (mm)', null=True, blank=True)
+
     @property
     def soma_7_dobras(self):
         return sum([

@@ -1,0 +1,13 @@
+{% load custom_filters %}
+<tr>
+    <td>{{ label }}</td>
+    <td>{{ avaliacao|get_attribute:medida|default:"-"|floatformat:1 }} mm</td>
+    {% if ultima_avaliacao %}
+    <td>{{ ultima_avaliacao|get_attribute:medida|default:"-"|floatformat:1 }} mm</td>
+    <td class="{% if diferencas|get_attribute:medida > 0 %}text-danger{% elif diferencas|get_attribute:medida < 0 %}text-success{% endif %}">
+        {% if avaliacao|get_attribute:medida and ultima_avaliacao|get_attribute:medida %}
+            {{ diferencas|get_attribute:medida|floatformat:1 }} mm
+        {% else %}-{% endif %}
+    </td>
+    {% endif %}
+</tr>

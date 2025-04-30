@@ -86,6 +86,28 @@ def historico_avaliacoes(request, paciente_id):
         'titulo': f'Histórico - {paciente.nome}'
     })
 
+def gerar_grafico_medidas(avaliacoes, medidas_selecionadas):
+    plt.switch_backend('Agg')
+    fig, ax = plt.subplots(figsize=(12, 6))
+    
+    datas = [av.data_avaliacao for av in avaliacoes]
+    
+    for medida in medidas_selecionadas:
+        valores = [getattr(av, medida) for av in avaliacoes if getattr(av, medida)]
+        if valores:
+            ax.plot(datas[:len(valores)], valores, marker='o', label=medida.replace('_', ' ').title())
+    
+    ax.set_title('Evolução de Medidas Antropométricas')
+    ax.set_ylabel('Medida (mm)')
+    ax.legend()
+    ax.grid(True, linestyle='--', alpha=0.6)
+    fig.autofmt_xdate()
+    
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png', dpi=100, bbox_inches='tight')
+    plt.close()
+    return base64.b64encode(buffer.getvalue()).decode('utf-8')
+
 @login_required
 def relatorio_completo(request, pk):
     avaliacao_atual = get_object_or_404(Avaliacao, pk=pk)
@@ -131,6 +153,10 @@ def relatorio_completo(request, pk):
             massa_magra=100 - avaliacao_atual.percentual_gordura,  # Calcula % massa magra
             titulo=f"Composição Corporal - {paciente.nome}"
         )
+        
+        # Gráfico de medidas padrão
+        medidas_padrao = ['cintura', 'quadril', 'braco_direito']
+        graficos['medidas'] = gerar_grafico_medidas(todas_avaliacoes, medidas_padrao)
     
     return render(request, 'avaliacao/relatorio_completo.html', {
         'avaliacao': avaliacao_atual,

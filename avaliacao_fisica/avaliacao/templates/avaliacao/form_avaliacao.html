@@ -114,6 +114,40 @@
                 </div>
             </div>
 
+            <!-- Seção de Medidas Antropométricas -->
+            <div class="card mt-4">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="bi bi-rulers"></i> Medidas Corporais (mm) - Opcionais</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Membros Superiores</h6>
+                            {{ form.braco_direito|as_crispy_field }}
+                            {{ form.braco_esquerdo|as_crispy_field }}
+                            {{ form.antebraco_direito|as_crispy_field }}
+                            {{ form.antebraco_esquerdo|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Tronco</h6>
+                            {{ form.cintura|as_crispy_field }}
+                            {{ form.quadril|as_crispy_field }}
+                            {{ form.tronco|as_crispy_field }}
+                            {{ form.abdomen|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6>Membros Inferiores</h6>
+                            {{ form.coxa_direita|as_crispy_field }}
+                            {{ form.coxa_esquerda|as_crispy_field }}
+                            {{ form.panturrilha_direita|as_crispy_field }}
+                            {{ form.panturrilha_esquerda|as_crispy_field }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="row mt-3">
                 <div class="col-md-6">
                     {{ form.tmb|as_crispy_field }}

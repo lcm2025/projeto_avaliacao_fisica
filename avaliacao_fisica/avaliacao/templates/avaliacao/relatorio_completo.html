@@ -4,6 +4,177 @@
 {% block content %}
 <div class="container mt-4">
     <!-- Cabeçalho -->
+         <!-- Seção de Medidas Antropométricas -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+            <h4><i class="bi bi-rulers"></i> Medidas Antropométricas (mm)</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Medida</th>
+                            <th>Atual</th>
+                            {% if ultima_avaliacao %}
+                            <th>Anterior ({{ ultima_avaliacao.data_avaliacao|date:"d/m/y" }})</th>
+                            <th>Diferença</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Membros Superiores -->
+                        <tr class="table-group-divider">
+                            <td colspan="{% if ultima_avaliacao %}4{% else %}2{% endif %}" class="fw-bold bg-light">Membros Superiores</td>
+                        </tr>
+                        <tr>
+                            <td>Braço Direito</td>
+                            <td>{{ avaliacao.braco_direito|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.braco_direito|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.braco_direito and ultima_avaliacao.braco_direito %}{% if avaliacao.braco_direito|subtract:ultima_avaliacao.braco_direito > 0 %}text-danger{% elif avaliacao.braco_direito|subtract:ultima_avaliacao.braco_direito < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.braco_direito and ultima_avaliacao.braco_direito %}
+                                    {{ avaliacao.braco_direito|subtract:ultima_avaliacao.braco_direito|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Braço Esquerdo</td>
+                            <td>{{ avaliacao.braco_esquerdo|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.braco_esquerdo|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.braco_esquerdo and ultima_avaliacao.braco_esquerdo %}{% if avaliacao.braco_esquerdo|subtract:ultima_avaliacao.braco_esquerdo > 0 %}text-danger{% elif avaliacao.braco_esquerdo|subtract:ultima_avaliacao.braco_esquerdo < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.braco_esquerdo and ultima_avaliacao.braco_esquerdo %}
+                                    {{ avaliacao.braco_esquerdo|subtract:ultima_avaliacao.braco_esquerdo|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Antebraco Direito</td>
+                            <td>{{ avaliacao.antebraco_direito|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.antebraco_direito|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.antebraco_direito and ultima_avaliacao.antebraco_direito %}{% if avaliacao.antebraco_direito|subtract:ultima_avaliacao.antebraco_direito > 0 %}text-danger{% elif avaliacao.antebraco_direito|subtract:ultima_avaliacao.antebraco_direito < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.antebraco_direito and ultima_avaliacao.antebraco_direito %}
+                                    {{ avaliacao.antebraco_direito|subtract:ultima_avaliacao.antebraco_direito|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Antebraco Esquerdo</td>
+                            <td>{{ avaliacao.antebraco_esquerdo|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.antebraco_esquerdo|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.antebraco_esquerdo and ultima_avaliacao.antebraco_esquerdo %}{% if avaliacao.antebraco_esquerdo|subtract:ultima_avaliacao.antebraco_esquerdo > 0 %}text-danger{% elif avaliacao.antebraco_esquerdo|subtract:ultima_avaliacao.antebraco_esquerdo < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.antebraco_esquerdo and ultima_avaliacao.antebraco_esquerdo %}
+                                    {{ avaliacao.antebraco_esquerdo|subtract:ultima_avaliacao.antebraco_esquerdo|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Tronco</td>
+                            <td>{{ avaliacao.tronco|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.tronco|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.tronco and ultima_avaliacao.tronco %}{% if avaliacao.tronco|subtract:ultima_avaliacao.tronco > 0 %}text-danger{% elif avaliacao.tronco|subtract:ultima_avaliacao.tronco < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.tronco and ultima_avaliacao.tronco %}
+                                    {{ avaliacao.tronco|subtract:ultima_avaliacao.tronco|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Abdomen</td>
+                            <td>{{ avaliacao.abdomen|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.abdomen|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.abdomen and ultima_avaliacao.abdomen %}{% if avaliacao.abdomen|subtract:ultima_avaliacao.abdomen > 0 %}text-danger{% elif avaliacao.abdomen|subtract:ultima_avaliacao.abdomen < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.abdomen and ultima_avaliacao.abdomen %}
+                                    {{ avaliacao.abdomen|subtract:ultima_avaliacao.abdomen|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <!-- Membros Inferiores -->
+                        <tr class="table-group-divider">
+                            <td colspan="{% if ultima_avaliacao %}4{% else %}2{% endif %}" class="fw-bold bg-light">Membros Superiores</td>
+                        </tr>
+                        <tr>
+                            <td>Cintura</td>
+                            <td>{{ avaliacao.cintura|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.cintura|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.cintura and ultima_avaliacao.cintura %}{% if avaliacao.cintura|subtract:ultima_avaliacao.cintura > 0 %}text-danger{% elif avaliacao.cintura|subtract:ultima_avaliacao.cintura < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.cintura and ultima_avaliacao.cintura %}
+                                    {{ avaliacao.cintura|subtract:ultima_avaliacao.cintura|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Quadril</td>
+                            <td>{{ avaliacao.quadril|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.quadril|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.quadril and ultima_avaliacao.quadril %}{% if avaliacao.quadril|subtract:ultima_avaliacao.quadril > 0 %}text-danger{% elif avaliacao.quadril|subtract:ultima_avaliacao.quadril < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.quadril and ultima_avaliacao.quadril %}
+                                    {{ avaliacao.quadril|subtract:ultima_avaliacao.quadril|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Coxa Direita</td>
+                            <td>{{ avaliacao.coxa_direita|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.coxa_direita|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.coxa_direita and ultima_avaliacao.coxa_direita %}{% if avaliacao.coxa_direita|subtract:ultima_avaliacao.coxa_direita > 0 %}text-danger{% elif avaliacao.coxa_direita|subtract:ultima_avaliacao.coxa_direita < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.coxa_direita and ultima_avaliacao.coxa_direita %}
+                                    {{ avaliacao.coxa_direita|subtract:ultima_avaliacao.coxa_direita|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Coxa Esquerda</td>
+                            <td>{{ avaliacao.coxa_esquerda|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.coxa_esquerda|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.coxa_esquerda and ultima_avaliacao.coxa_esquerda %}{% if avaliacao.coxa_esquerda|subtract:ultima_avaliacao.coxa_esquerda > 0 %}text-danger{% elif avaliacao.coxa_esquerda|subtract:ultima_avaliacao.coxa_esquerda < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.coxa_esquerda and ultima_avaliacao.coxa_esquerda %}
+                                    {{ avaliacao.coxa_esquerda|subtract:ultima_avaliacao.coxa_esquerda|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Panturrilha Direita</td>
+                            <td>{{ avaliacao.panturrilha_direita|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.panturrilha_direita|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.panturrilha_direita and ultima_avaliacao.panturrilha_direita %}{% if avaliacao.panturrilha_direita|subtract:ultima_avaliacao.panturrilha_direita > 0 %}text-danger{% elif avaliacao.panturrilha_direita|subtract:ultima_avaliacao.panturrilha_direita < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.panturrilha_direita and ultima_avaliacao.panturrilha_direita %}
+                                    {{ avaliacao.panturrilha_direita|subtract:ultima_avaliacao.panturrilha_direita|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        <tr>
+                            <td>Panturrilha Esquerda</td>
+                            <td>{{ avaliacao.panturrilha_esquerda|default:"-"|floatformat:1 }} mm</td>
+                            {% if ultima_avaliacao %}
+                            <td>{{ ultima_avaliacao.panturrilha_esquerda|default:"-"|floatformat:1 }} mm</td>
+                            <td class="{% if avaliacao.panturrilha_esquerda and ultima_avaliacao.panturrilha_esquerda %}{% if avaliacao.panturrilha_esquerda|subtract:ultima_avaliacao.panturrilha_esquerda > 0 %}text-danger{% elif avaliacao.panturrilha_esquerda|subtract:ultima_avaliacao.panturrilha_esquerda < 0 %}text-success{% endif %}{% endif %}">
+                                {% if avaliacao.panturrilha_esquerda and ultima_avaliacao.panturrilha_esquerda %}
+                                    {{ avaliacao.panturrilha_esquerda|subtract:ultima_avaliacao.panturrilha_esquerda|floatformat:1 }} mm
+                                {% else %}-{% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">
             <h2>

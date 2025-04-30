@@ -34,6 +34,18 @@ class AvaliacaoForm(forms.ModelForm):
             'axilar_media': forms.NumberInput(attrs={'step': '0.1', 'class': 'dobra-input'}),
             'subescapular': forms.NumberInput(attrs={'step': '0.1', 'class': 'dobra-input'}),
             'suprailiaca': forms.NumberInput(attrs={'step': '0.1', 'class': 'dobra-input'}),
+            'braco_direito': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
+            'braco_esquerdo': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
+            'antebraco_direito': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
+            'antebraco_esquerdo': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
+            'cintura': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
+            'quadril': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
+            'tronco': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
+            'abdomen': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
+            'coxa_direita': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
+            'coxa_esquerda': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
+            'panturrilha_direita': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
+            'panturrilha_esquerda': forms.NumberInput(attrs={'step': '0.1', 'class': 'medida-input'}),
         }
         labels = {
             
@@ -51,6 +63,15 @@ class AvaliacaoForm(forms.ModelForm):
                        'coxa', 'axilar_media', 'suprailiaca']
         for field in dobra_fields:
             self.fields[field].required = False
+            
+        medidas_fields = [
+            'braco_direito', 'braco_esquerdo', 'antebraco_direito', 'antebraco_esquerdo',
+            'cintura', 'quadril', 'tronco', 'abdomen',
+            'coxa_direita', 'coxa_esquerda', 'panturrilha_direita', 'panturrilha_esquerda'
+        ]
+        for field in medidas_fields:
+            self.fields[field].required = False
+            self.fields[field].validators.append(self.validate_dobra)
 
     def clean(self):
         cleaned_data = super().clean()
