@@ -10,6 +10,7 @@
         </h2>
     </div>
     <div class="card-body">
+        <!-- Seção 1: Informações do Paciente  -->
         <div class="row mb-4">
             <div class="col-md-6">
                 <p><strong>Idade:</strong> {{ paciente.idade }} anos</p>
@@ -25,9 +26,29 @@
                 </p>
             </div>
         </div>
-
+        
+        <!-- Seção 2: Formulário - ADIÇÃO DO CAMPO DE DATA AQUI -->
+              
         <form method="post">
             {% csrf_token %}
+
+            <!-- Novo Bloco Adicionado 23/05/25 -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="id_data_avaliacao" class="form-label">Data da Avaliação*</label>
+                    <input type="date" 
+                           name="data_avaliacao" 
+                           id="id_data_avaliacao"
+                           class="form-control {% if form.data_avaliacao.errors %}is-invalid{% endif %}"
+                           value="{{ form.data_avaliacao.value|date:'Y-m-d' }}"
+                           required>
+                    {% if form.data_avaliacao.errors %}
+                        <div class="invalid-feedback">
+                            {{ form.data_avaliacao.errors|first }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
             
             <!-- Seção de Protocolo -->
             <div class="row mb-3">

@@ -1,6 +1,7 @@
 from django import forms
 from .models import Paciente, Avaliacao
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
 
 class PacienteForm(forms.ModelForm):
     class Meta:
@@ -13,6 +14,17 @@ class PacienteForm(forms.ModelForm):
         }
 
 class AvaliacaoForm(forms.ModelForm):
+    # Campo de data explícito
+    data_avaliacao = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'form-control',
+            'required': 'required'
+        }),
+        input_formats=['%Y-%m-%d'],
+        required=True,
+        initial=timezone.now().date()
+    )
     # Validação personalizada para dobras cutâneas
     def validate_dobra(value):
         if value is not None and (value < 3 or value > 60):
@@ -20,7 +32,39 @@ class AvaliacaoForm(forms.ModelForm):
 
     class Meta:
         model = Avaliacao
-        exclude = ['paciente', 'data_avaliacao']
+        fields = [
+            'data_avaliacao',
+            'protocolo',
+            'altura',
+            'peso',
+            'percentual_gordura',
+            'massa_magra',
+            'gordura_visceral',
+            'tmb',
+            'idade_metabolica',
+            'observacoes',
+            # Dobras cutâneas
+            'torax',
+            'triceps',
+            'abdominal',
+            'coxa',
+            'axilar_media',
+            'subescapular',
+            'suprailiaca',
+            # Medidas antropométricas
+            'braco_direito',
+            'braco_esquerdo',
+            'antebraco_direito',
+            'antebraco_esquerdo',
+            'cintura',
+            'quadril',
+            'tronco',
+            'abdomen',
+            'coxa_direita',
+            'coxa_esquerda',
+            'panturrilha_direita',
+            'panturrilha_esquerda'
+        ]
         widgets = {
             'protocolo': forms.Select(attrs={
                 'class': 'form-select',

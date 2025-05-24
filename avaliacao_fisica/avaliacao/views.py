@@ -34,6 +34,7 @@ def nova_avaliacao(request, paciente_id):
     paciente = get_object_or_404(Paciente, pk=paciente_id)
     
     if request.method == 'POST':
+        print("Dados recebidos:", request.POST)  # Debug: imprime os dados do formulário
         form = AvaliacaoForm(request.POST)
         if form.is_valid():
             avaliacao = form.save(commit=False)
@@ -65,6 +66,8 @@ def nova_avaliacao(request, paciente_id):
             
             avaliacao.save()
             return redirect('avaliacao:historico_avaliacoes', paciente_id=paciente.id)
+        else:
+            print("Erros do formulário:", form.errors.as_json())  # Debug: imprime os erros do formulário
     else:
         form = AvaliacaoForm()
     

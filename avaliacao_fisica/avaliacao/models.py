@@ -35,7 +35,7 @@ class Avaliacao(models.Model):
     )
 
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='avaliacoes')
-    data_avaliacao = models.DateTimeField(auto_now_add=True)
+    data_avaliacao = models.DateField()  # Removido o 'default' (agora será obrigatório preencher)
     altura = models.FloatField(help_text="Altura em metros")
     peso = models.FloatField(help_text="Peso em kg")
     percentual_gordura = models.FloatField(verbose_name="% Gordura")
