@@ -3,6 +3,14 @@ from .models import Paciente, Avaliacao
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 
+
+DOBRA_MIN, DOBRA_MAX = 3, 60  # mm (para dobras cutâneas)
+MEDIDA_MIN, MEDIDA_MAX = 10, 250  # mm (para medidas corporais - ajuste conforme necessidade)
+
+def validate_medida(value):
+    if value is not None and (value < MEDIDA_MIN or value > MEDIDA_MAX):
+        raise forms.ValidationError(f"A medida deve estar entre {MEDIDA_MIN} e {MEDIDA_MAX} mm")
+
 class PacienteForm(forms.ModelForm):
     class Meta:
         model = Paciente
@@ -98,6 +106,12 @@ class AvaliacaoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
+        for field in dobra_fields:  # Campos de dobras (mantém validação 3-60mm)
+            self.fields[field].validators.append(self.validate_dobra)
+
+        for field in medidas_fields:  # Campos de medidas (nova validação)
+            self.fields[field].validators.append(validate_medida)
+        
         # Validações básicas
         self.fields['altura'].validators.extend([MinValueValidator(0.5), MaxValueValidator(2.5)])
         self.fields['peso'].validators.extend([MinValueValidator(20), MaxValueValidator(300)])
@@ -115,7 +129,7 @@ class AvaliacaoForm(forms.ModelForm):
         ]
         for field in medidas_fields:
             self.fields[field].required = False
-            self.fields[field].validators.append(self.validate_dobra)
+           
 
     def clean(self):
         cleaned_data = super().clean()
