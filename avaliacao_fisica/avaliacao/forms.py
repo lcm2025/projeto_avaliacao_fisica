@@ -106,29 +106,29 @@ class AvaliacaoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        for field in dobra_fields:  # Campos de dobras (mantém validação 3-60mm)
-            self.fields[field].validators.append(self.validate_dobra)
-
-        for field in medidas_fields:  # Campos de medidas (nova validação)
-            self.fields[field].validators.append(validate_medida)
-        
-        # Validações básicas
-        self.fields['altura'].validators.extend([MinValueValidator(0.5), MaxValueValidator(2.5)])
-        self.fields['peso'].validators.extend([MinValueValidator(20), MaxValueValidator(300)])
-        
         # Torna todos os campos de dobras não obrigatórios inicialmente
         dobra_fields = ['triceps', 'subescapular', 'torax', 'abdominal', 
                        'coxa', 'axilar_media', 'suprailiaca']
-        for field in dobra_fields:
-            self.fields[field].required = False
-            
+                    
         medidas_fields = [
             'braco_direito', 'braco_esquerdo', 'antebraco_direito', 'antebraco_esquerdo',
             'cintura', 'quadril', 'tronco', 'abdomen',
             'coxa_direita', 'coxa_esquerda', 'panturrilha_direita', 'panturrilha_esquerda'
         ]
-        for field in medidas_fields:
+
+        for field in dobra_fields: # Campos de dobras (mantém validação 3-60mm)
+            self.fields[field].validators.append(self.validate_dobra)
             self.fields[field].required = False
+
+        for field in medidas_fields:    # Campos de medidas (nova validação)
+            self.fields[field].validators.append(validate_medida)
+            self.fields[field].required = False   
+
+                          
+        # Validações básicas
+        self.fields['altura'].validators.extend([MinValueValidator(0.5), MaxValueValidator(2.5)])
+        self.fields['peso'].validators.extend([MinValueValidator(20), MaxValueValidator(300)])
+        
            
 
     def clean(self):
